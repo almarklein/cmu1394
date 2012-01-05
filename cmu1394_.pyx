@@ -201,7 +201,7 @@ def get_cameras():
     new_cameras.clear()
     
     # Return as a list
-    return _CAMERAS.values()
+    return [cam for cam in _CAMERAS.values()]
 
 
 cdef class Camera:
@@ -396,7 +396,7 @@ cdef class Camera:
         self.stop()
         
         # Make float
-        if isinstance(rate, basestring):
+        if isinstance(rate, str):
             rate = rate.split(' ')[0] # remove 'fps' part if present
         rate = float(rate)
         
@@ -489,7 +489,8 @@ cdef class Camera:
             raise RuntimeError('Could not determine shape of the data. Use other format or use get_rgb().')
         
         # Create empty numpy array for holding the data
-        n = reduce(lambda x,y: x*y, shape)
+        n = 1
+        for n_ in shape: n *= n_
         cdef np.ndarray[np.uint8_t] im = np.empty((pLength,), 'uint8')
         
         # Copy data from camera buffer to numpy array

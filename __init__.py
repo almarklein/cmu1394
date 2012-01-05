@@ -16,7 +16,7 @@ camera instance cen be used to capture frames.
 try:
     from pyzo import pyximport
 except ImportError:
-    pass
+    print('Could not import pyzo; cannot compile.')
 else:
     ext_kwargs = {'include_dirs':['include'], 'library_dirs': ['lib']}
     pyximport.install(  language='c++', compiler='native',
