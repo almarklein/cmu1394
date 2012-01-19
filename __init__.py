@@ -25,5 +25,6 @@ else:
                         libraries=['1394camera'] )    
 
 # Import 
-from cmu1394 import cmu1394_
-get_cameras = cmu1394_.get_cameras
+from cmu1394 import cmu1394_cython
+get_cameras = cmu1394_cython.get_cameras
+Camera = cmu1394_cython.Camera
