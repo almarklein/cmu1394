@@ -1,4 +1,8 @@
-""" Endothelial cell detector.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Copyright (c) 2012, Almar Klein
+
+""" This is a demo application for the CMU1394 Camera module.
 """
 
 from PyQt4 import QtGui, QtCore
@@ -9,37 +13,79 @@ import visvis as vv
 app = vv.use('qt4')
 
 
+class MainWindow(QtGui.QWidget):
+    
+    def __init__(self):
+        QtGui.QWidget.__init__(self)
+        
+        # Limit size
+        self.setMinimumHeight(500)
+        self.setMinimumWidth(600)
+        
+        # Make figure using "self" as a parent
+        self._fig = vv.backends.backend_qt4.Figure(self)
+        
+        # Create sidebar
+        self._sidebar = SideBar(self)
+        self._sidebar.setMinimumWidth(250)
+        self._sidebar.setMaximumWidth(250)
+        
+        # Layout
+        layout = QtGui.QHBoxLayout()
+        layout.addWidget(self._sidebar, 0)
+        layout.addWidget(self._fig._widget, 1)
+        self.setLayout(layout)
+        
+        # Finish
+        self.setWindowTitle('CMU1394 Camera Python demo app')
+        self.show()
+    
+    
+    def closeEvent(self, event):
+        # Nicely stop the camera
+        QtGui.QWidget.closeEvent(self, event)
+        theCam = self._sidebar._theCam
+        if theCam:
+            theCam.stop()
+    
+
 class SideBar(QtGui.QWidget):
     
     def __init__(self, *args):
         QtGui.QWidget.__init__(self, *args)
         
-        # Limit width
-        self.setMinimumWidth(250)
-        self.setMaximumWidth(250)
-        
         # Create refresh button
         self._butRefreshCameraList = QtGui.QPushButton('Refresh camera list', self)
         self._butRefreshCameraList.pressed.connect(self.refreshCameraList)
-        
         # Create list of cameras
         self._listCameras = QtGui.QComboBox(self)
         self._listCameras.activated.connect(self.activateCamera)
-        
-        # Create list for resolutions
-        self._listFormats = QtGui.QComboBox(self)
-        self._listFormats.activated.connect(self.activateFormat)
-        
-        # Create label for fps
-        self._labelFps = QtGui.QLabel(self)
-        
-        # Layout
+        # Create groupbox for selecting camera
+        self._groupCamera = QtGui.QGroupBox('Select camera', self)
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._butRefreshCameraList)
         layout.addWidget(self._listCameras)
+        self._groupCamera.setLayout(layout)
+        
+        # Create list for formats
+        self._listFormats = QtGui.QComboBox(self)
+        self._listFormats.activated.connect(self.activateFormat)
+        # Create label for fps
+        self._labelFps = QtGui.QLabel(self)
+        # Create group for selecting format
+        self._groupFormat = QtGui.QGroupBox("Select format", self)
+        layout = QtGui.QVBoxLayout()
         layout.addWidget(self._listFormats)
         layout.addWidget(self._labelFps)
-        layout.addStretch(1)
+        self._groupFormat.setLayout(layout)
+        
+        # Layout
+        layout = QtGui.QVBoxLayout()
+        layout.addSpacing(10)
+        layout.addWidget(self._groupCamera)
+        layout.addSpacing(10)
+        layout.addWidget(self._groupFormat)
+        layout.addStretch(3)
         self.setLayout(layout)
         
         # Start timer
@@ -130,6 +176,11 @@ class SideBar(QtGui.QWidget):
     
     
     def refreshFormatList(self):
+        """ refreshFormatList()
+        
+        Refresh the list of formats.
+        
+        """
         
         # Init        
         self._listFormats.clear()
@@ -203,33 +254,6 @@ class SideBar(QtGui.QWidget):
         
         else:
             self._labelFps.setText('0 fps')
-
-
-
-class MainWindow(QtGui.QWidget):
-    
-    def __init__(self):
-        QtGui.QWidget.__init__(self)
-        
-        # Limit size
-        self.setMinimumHeight(500)
-        self.setMinimumWidth(600)
-        
-        # Make figure using "self" as a parent
-        self._fig = vv.backends.backend_qt4.Figure(self)
-        
-        # Create sidebar
-        self._sidebar = SideBar(self)
-        
-        # Layout
-        layout = QtGui.QHBoxLayout()
-        layout.addWidget(self._sidebar, 0)
-        layout.addWidget(self._fig._widget, 1)
-        self.setLayout(layout)
-        
-        # Finish
-        self.setWindowTitle('Endothelial Cells Detector')
-        self.show()
 
 
 # Run the visvis way. Will run in interactive mode when used in IEP or IPython.
