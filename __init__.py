@@ -12,19 +12,31 @@ camera instance cen be used to capture frames.
 
 """
 
-# Try compiling if pyzo is installed
+__version__ = 1.1
+
+# Try importing cython compile module from pyzo
 try:
     from pyzo import pyximport
 except ImportError:
-    print('Could not import pyzo; cannot compile.')
-else:
+    pyximport = None
+
+# If we can, see if the module needs to be recompiled
+if pyximport:
     ext_kwargs = {'include_dirs':['include'], 'library_dirs': ['lib']}
     pyximport.install(  language='c++', compiler='native',
                         include_dirs=['include'], 
                         library_dirs=['lib'], 
                         libraries=['1394camera'] )    
 
-# Import 
-from cmu1394 import cmu1394_cython
+# Import the Cython lib
+try:
+    from cmu1394 import cmu1394_cython
+except ImportError:
+    if pyximport is None:
+        print('Could not import pyzo.pyximport; cannot compile.')
+    else:
+        raise
+
+# Inject names into this namespace
 get_cameras = cmu1394_cython.get_cameras
 Camera = cmu1394_cython.Camera
