@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2012, Almar Klein
 
-""" This is a demo application for the CMU1394 Camera module.
+""" 
+This is a demo application for the CMU1394 Camera module.
+This demo requires PyQt4 and visvis.
 """
 
 from PyQt4 import QtGui, QtCore
