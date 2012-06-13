@@ -16,7 +16,7 @@ __version__ = 1.1
 
 # Try importing cython compile module from pyzo
 try:
-    from pyzo import pyximport
+    from pyzolib import pyximport
 except ImportError:
     pyximport = None
 
@@ -24,7 +24,7 @@ except ImportError:
 if pyximport:
     ext_kwargs = {'include_dirs':['include'], 'library_dirs': ['lib']}
     pyximport.install(  language='c++', compiler='native',
-                        include_dirs=['include'], 
+                        include_dirs=['include'],
                         library_dirs=['lib'], 
                         libraries=['1394camera'] )    
 
